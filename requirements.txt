@@ -1,0 +1,5 @@
+Flask==2.1.2
+flask-cors==3.1.1
+gdown==4.0.3
+moviepy==1.0.3
+assemblyai==2.0.0
