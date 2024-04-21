@@ -1,12 +1,11 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS from flask_cors
 import gdown
 from moviepy.editor import VideoFileClip
 import assemblyai as aai
 import os
 
 app = Flask(__name__)
-CORS(app)  # Initialize CORS with your Flask app
+
 
 # Set up AssemblyAI API key
 aai.settings.api_key = "87063c7417345c4b8de68a676b60714"
