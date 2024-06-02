@@ -1,4 +1,4 @@
 Flask==2.1.2
-gdown==4.0.3
+gdown==5.2.0
 moviepy==1.0.3
 assemblyai==2.0.0
