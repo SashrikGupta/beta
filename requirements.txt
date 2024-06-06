@@ -2,4 +2,4 @@ Flask==2.0.2
 moviepy==1.0.3
 assemblyai==0.4.1
 python-dotenv==0.19.2
-flask-cors==3.1.1
+flask-cors==4.0.1
