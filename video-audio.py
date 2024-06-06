@@ -1,44 +1,61 @@
+
 from flask import Flask, request, jsonify
-import gdown
-from moviepy.editor import VideoFileClip
+from flask_cors import CORS  # Add this import for CORS support
+from moviepy.editor import AudioFileClip
 import assemblyai as aai
 import os
 
+
+# Environment setup 
+
+
+gkey = "AIzaSyC2w_s0gzTC5bNkDeiOnloUdKf7RAIIlbM"
+aikey = "687063c7417345c4b8de68a676b60714"
+
+aai.settings.api_key = aikey
+transcriber = aai.Transcriber()
+
+# The description function 
+def aud_desc(video_path):
+    audioclip = AudioFileClip(video_path)
+    duration = audioclip.duration  
+    segment_length = 300
+    transcriptions = []
+    
+    for start in range(0, int(duration), segment_length):
+        end = min(start + segment_length, duration)
+        segment = audioclip.subclip(start, end)
+        output_file = f"audio_{start}_{end}.mp3"
+        segment.write_audiofile(output_file)
+        transcript = transcriber.transcribe(output_file)
+        transcriptions.append(transcript.text)
+        os.remove(output_file)
+    
+    full_transcript = " ".join(transcriptions)
+    return full_transcript
+
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
-
-# Set up AssemblyAI API key
-aai.settings.api_key = "87063c7417345c4b8de68a676b60714"
-
-@app.route('/transcribe', methods=['POST'])
-def transcribe_video():
-    # Get URL from request
-    url = request.json.get('url')
+@app.route('/upload', methods=['POST'])
+def upload_video():
+    if 'video' not in request.files:
+        return jsonify({'error': 'No video file provided'}), 400
     
-    # Download the video file
-    file_id = url.split('/')[-2]
-    prefix = 'https://drive.google.com/uc?/export=download&id='
-    gdown.download(prefix + file_id, 'video.mp4')
-
-    # Extract audio from the video
-    video_clip = VideoFileClip('video.mp4')
-    audio_clip = video_clip.audio
-    audio_clip.write_audiofile('audio.mp3')
-
-    # Close the clips
-    video_clip.close()
-    audio_clip.close()
-
-    # Transcribe audio using AssemblyAI
-    transcriber = aai.Transcriber()
-    transcript = transcriber.transcribe("audio.mp3")
-    transcript_text = transcript.text
+    video = request.files['video']
+    video_path = os.path.join('uploads', video.filename)
+    video.save(video_path)
     
-    # Delete the downloaded files
-    os.remove('audio.mp3')
-    os.remove('video.mp4')
-
-    return jsonify({'transcript': transcript_text})
+    try:
+        summary = aud_desc(video_path)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        os.remove(video_path)
+    
+    return jsonify({'summary': summary}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if not os.path.exists('uploads'):
+        os.makedirs('uploads')
+    app.run(debug=True, port=5000, threaded=True)
