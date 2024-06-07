@@ -1,5 +1,4 @@
-
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, render_template_string
 from flask_cors import CORS  # Import CORS from flask_cors
 import os
 from moviepy.editor import VideoFileClip
@@ -23,7 +22,11 @@ def aud_desc(video_path):
     except Exception as e:
         return str(e)
 
-@app.route('/', methods=['POST'])
+@app.route('/')
+def home():
+    return render_template_string("<h1>This converts audio</h1>")
+
+@app.route('/up', methods=['POST'])
 def upload_video():
     global vp, ap
     if 'video' not in request.files:
@@ -57,4 +60,5 @@ def delete():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
