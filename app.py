@@ -22,11 +22,9 @@ def aud_desc(video_path):
     except Exception as e:
         return str(e)
 
-@app.route('/')
-def home():
-    return render_template_string("<h1>This converts audio</h1>")
 
-@app.route('/up', methods=['POST'])
+
+@app.route('/', methods=['POST'])
 def upload_video():
     global vp, ap
     if 'video' not in request.files:
