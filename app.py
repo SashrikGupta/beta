@@ -23,7 +23,7 @@ def aud_desc(video_path):
     except Exception as e:
         return str(e)
 
-@app.route('/upload_video', methods=['POST'])
+@app.route('/', methods=['POST'])
 def upload_video():
     global vp, ap
     if 'video' not in request.files:
