@@ -22,8 +22,6 @@ def aud_desc(video_path):
     except Exception as e:
         return str(e)
 
-
-
 @app.route('/', methods=['POST'])
 def upload_video():
     global vp, ap
@@ -57,6 +55,10 @@ def delete():
         return jsonify({'message': 'Files deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/acknowledgment', methods=['POST'])
+def acknowledgment():
+    return jsonify({'status': 'running'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
