@@ -42,7 +42,7 @@ def upload_video():
         ap = audio_path
         return send_file(audio_path, as_attachment=True)
     except Exception as e:
-        print(e) 
+        print(str(e)) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/delete', methods=['POST'])
